@@ -16,12 +16,19 @@ Detail.getLayout = (page: React.ReactElement) => <MainLayout> {page} </MainLayou
 
 // ----------------------------------------------------------------------
 
+interface Data {
+    title: string;
+    image_url: string;
+    author: string;
+    description: string;
+}
+
 export default function Detail(props:any) {
 
     const router = useRouter();
     const id = router.query.id;
 
-    const [data, setData] = useState([]);
+    const [data, setData] = useState<Data>(null);
 
     useEffect(() => {
         axios.get(`http://vuquanghuydev.pythonanywhere.com/api/book/${id}/`)
@@ -42,7 +49,7 @@ export default function Detail(props:any) {
             <Container maxWidth='md' sx={{ height: 1, mt: 4, mb: 2, pb: 3 }}>
                 <Stack direction={{xs: 'column', sm: 'row'}} spacing={{xs: 1, sm: 2, md: 4}}>
                     <Box>
-                        <img src={data.image_url} alt='' style={{ width:'450px', maxHeight: '550px', objectFit: 'cover' }} />
+                        <img src={ data ? data.image_url : ''} alt='' style={{ width:'450px', maxHeight: '550px', objectFit: 'cover' }} />
                     </Box>
                     <Box>
                         <Typography variant='h4' sx={{ mb: 1, mt: 3}}>
