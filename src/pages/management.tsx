@@ -33,6 +33,7 @@ import {
   IconButton,
   TableContainer,
   Modal,
+  DialogProps,
 } from '@mui/material';
 import { DesktopDatePicker } from '@mui/x-date-pickers';
 // components
@@ -51,8 +52,8 @@ import {
 import SimpleLayout from '../layouts/simple';
 import MainLayout from '../layouts/main';
 // import { parseJSON } from 'date-fns';
-//toast
-// import { toast } from 'wc-toast'
+// toast
+// import { toast } from 'wc-toast';
 
 // ----------------------------------------------------------------------
 
@@ -145,7 +146,7 @@ export default function Management() {
   // Alert
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
-  const [autoCloseTimeout, setAutoCloseTimeout] = useState(null);
+  const [autoCloseTimeout, setAutoCloseTimeout] = useState<NodeJS.Timeout | null>(null);
 
   // New modal
   const [openNewModal, setOpenNewModal] = useState(false);
@@ -185,7 +186,7 @@ export default function Management() {
   }, [openEditModal]);
 
   // Form data
-  const [formNew, setFormNew] = useState<IBook>({ image_url: '', title: '', author: '', description: '', price: '', quantity_in_stock: 0, publication_date: null})
+  const [formNew, setFormNew] = useState<IBook>({ image_url: '', title: '', author: '', description: '', price: '', quantity_in_stock: 0, publication_date: new Date() })
   // const [formEdit, setFormEdit] = useState<IBookUpdate>({ id: null, reviews: [], history: [], image_url: '', title: '', author: '', description: '', price: '', quantity_in_stock: 0, publication_date: null})
   const [formEdit, setFormEdit] = useState<IBookUpdate | null>(null);
   // From new
@@ -202,37 +203,42 @@ export default function Management() {
         }
       });
       fetchData();
-      setFormNew({ image_url: '', title: '', author: '', description: '', price: '', quantity_in_stock: 0, publication_date: null })
+      setFormNew({ image_url: '', title: '', author: '', description: '', price: '', quantity_in_stock: 0, publication_date: new Date() })
     } catch (error) {
       console.error('Error posting book:', error);
     }    
   }
   // Form edit
   const handleEditSubmit = async () => {
-    const { id, title, image_url, author, description, price, quantity_in_stock, publication_date } = formEdit;
-    const publication_date_formatted = formatDate(publication_date);
-    const quantity_in_stock_formatted = Number(quantity_in_stock);
-    const review = [];
-    const history = [];
-    const data = { review, history, title, author, description, price, quantity_in_stock: quantity_in_stock_formatted, publication_date: publication_date_formatted, image_url };
-    // const body = {"title": data.title ,"author": data.author, "description": data.description, "price": data.price, "quantity_in_stock": data.quantity_in_stock, "publication_date": data.publication_date, "image_url": data.image_url}
-    try {
-      const response = await axios.put(`https://vuquanghuydev.pythonanywhere.com/api/book/${id}/`, data, {
-        headers: {
-          'Content-Type': 'application/json'
+    if(formEdit){
+      const { id, title, image_url, author, description, price, quantity_in_stock, publication_date } = formEdit;
+      const publication_date_formatted = formatDate(publication_date);
+      const quantity_in_stock_formatted = Number(quantity_in_stock);
+      const review: string[] = [];
+      const history: string[] = [];
+      const data = { review, history, title, author, description, price, quantity_in_stock: quantity_in_stock_formatted, publication_date: publication_date_formatted, image_url };
+      // const body = {"title": data.title ,"author": data.author, "description": data.description, "price": data.price, "quantity_in_stock": data.quantity_in_stock, "publication_date": data.publication_date, "image_url": data.image_url}
+      try {
+        const response = await axios.put(`https://vuquanghuydev.pythonanywhere.com/api/book/${id}/`, data, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        fetchData();
+        setAlertMessage('Success');
+        setShowAlert(true);
+        setAutoCloseTimeout(setTimeout(() => {
+          setShowAlert(false);
+        }, 2000)); // Tự động đóng sau 2 giây
+        if (autoCloseTimeout) {
+          clearTimeout(autoCloseTimeout);
         }
-      });
-      fetchData();
-      setAlertMessage('Success');
-      setShowAlert(true);
-      setAutoCloseTimeout(setTimeout(() => {
-        setShowAlert(false);
-      }, 2000)); // Tự động đóng sau 2 giây
-      setFormNew({ image_url: '', title: '', author: '', description: '', price: '', quantity_in_stock: 0, publication_date: null });
-      handleCloseNewModal();
-    } catch (error) {
-      console.error('Error posting book:', error);
-    }    
+        setFormNew({ image_url: '', title: '', author: '', description: '', price: '', quantity_in_stock: 0, publication_date: new Date() });
+        handleCloseNewModal();
+      } catch (error) {
+        console.error('Error posting book:', error);
+      }    
+    }
 
     // alert(id)
   }
@@ -278,10 +284,13 @@ export default function Management() {
         setAutoCloseTimeout(setTimeout(() => {
         setShowAlert(false);
       }, 2000)); // Tự động đóng sau 2 giây
+      if (autoCloseTimeout) {
+        clearTimeout(autoCloseTimeout);
+      }
       }
       setOpenComfirm(false); // Đóng modal sau khi xóa
     } catch (error) {
-      setAlertMessage('Error when deleting: ', error.message); // Đặt nội dung thông báo lỗi
+      setAlertMessage('Error when deleting: '); // Đặt nội dung thông báo lỗi
       setShowAlert(true); // Hiển thị thông báo lỗi
       }
   }
@@ -328,10 +337,10 @@ export default function Management() {
           <DesktopDatePicker
             inputFormat="dd-MM-yyyy"
             label="Release"
-            value={formNew.publication_date}
+            value={formNew.publication_date || undefined}
             minDate={new Date('1000-01-01')}
-            onChange={ (newDate)=> setFormNew({...formNew, publication_date: newDate})}
-            renderInput={(params) => <TextField fullWidth margin="dense" {...params} margin="normal" required />}
+            onChange={ (newDate)=> setFormNew({ ...formNew, publication_date: newDate })}
+            renderInput={(params) => <TextField fullWidth margin="dense" {...params} required />}
           />
           <TextField fullWidth margin="dense" id="outlined-basic" name="description" label="Description" multiline rows={4} maxRows={4} value={formNew.description} onChange={ (e)=> setFormNew({...formNew, description: e.target.value})} required />
           <TextField fullWidth margin="dense" id="outlined-basic" name="author" label="Author" variant="outlined" value={formNew.author} onChange={ (e)=> setFormNew({...formNew, author: e.target.value})} required />
@@ -359,7 +368,7 @@ export default function Management() {
             value={formEdit ? formEdit.publication_date : ''}
             minDate={new Date('1100-01-01')}
             onChange={ (newDate)=> setFormEdit({...formEdit, publication_date: newDate})}
-            renderInput={(params) => <TextField fullWidth margin="dense" {...params} margin="normal" required />}
+            renderInput={(params) => <TextField fullWidth margin="dense" {...params} required />}
           />
           <TextField fullWidth margin="dense" id="outlined-basic" name="description" label="Description" multiline rows={4} maxRows={4} value={formEdit ? formEdit.description : '' } onChange={ (e)=> setFormEdit({...formEdit, description: e.target.value})} required />
           <TextField fullWidth margin="dense" id="outlined-basic" name="author" label="Author" variant="outlined" value={formEdit ? formEdit.author : '' } onChange={ (e)=> setFormEdit({...formEdit, author: e.target.value})} required />

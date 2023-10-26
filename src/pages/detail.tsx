@@ -28,7 +28,7 @@ export default function Detail(props:any) {
     const router = useRouter();
     const id = router.query.id;
 
-    const [data, setData] = useState<Data>();
+    const [data, setData] = useState<Data | null>(null);
 
     useEffect(() => {
         axios.get(`http://vuquanghuydev.pythonanywhere.com/api/book/${id}/`)

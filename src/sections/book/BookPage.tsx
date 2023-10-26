@@ -40,12 +40,19 @@ const StyledRoot = styled('div')(({ theme }) => ({
     },
 }));
 
+interface Data {
+    id: string;
+    image_url: string;
+    title: string;
+    description: string;
+}
+
 export default function BookPage() {
 
     const [hide, setHide] = useState(false);
     const themes = useTheme();
     // const [data, setData] = useState<BookData>(null);
-    const [data, setData] = useState([]);
+    const [data, setData] = useState<Data[]>([]);
 
     useEffect(() => {
         axios.get('http://vuquanghuydev.pythonanywhere.com/api/book/')
@@ -86,17 +93,18 @@ export default function BookPage() {
 
                 <Container component={MotionContainer} sx={{ height: 1, mt: 14, mb: 2, pb: 3 }}>
                     <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md:12 }}>
-                        {data.map(item => (
+                        {data.map((item) => (
                             <Grid item xs={4} sm={4} md={4} key={item.id}>
                                 <Card>
-                                    <img src={item.image_url} style={{width: '100%', maxHeight: '200px', objectFit: 'cover'}}/>
-                                    <CardHeader title={item.title} />
+                                    <img src={item.image_url} style={{width: '100%', maxHeight: '200px', objectFit: 'cover'}} alt={item.title}/>
+                                    <Link href={`/detail/?id=${item.id}`} underline="none">
+                                        <CardHeader title={item.title} />
+                                    </Link>
+
                                     <CardContent>
-                                        <Link href={`/detail/?id=${item.id}`}>
                                             <TextMaxLine line={2}>
                                                 {item.description}
                                             </TextMaxLine>
-                                        </Link>
                                     </CardContent>
                                 </Card>
                             </Grid>
