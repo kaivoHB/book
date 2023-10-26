@@ -28,7 +28,7 @@ export default function Detail(props:any) {
     const router = useRouter();
     const id = router.query.id;
 
-    const [data, setData] = useState<Data>(null);
+    const [data, setData] = useState<Data>();
 
     useEffect(() => {
         axios.get(`http://vuquanghuydev.pythonanywhere.com/api/book/${id}/`)
@@ -53,12 +53,12 @@ export default function Detail(props:any) {
                     </Box>
                     <Box>
                         <Typography variant='h4' sx={{ mb: 1, mt: 3}}>
-                            {data.title}
+                            {data ? data.title : ''}
                         </Typography>
 
-                        <Rating name='read-only' value={4} readOnly ></Rating>
+                        {/* <Rating name='read-only' value={4} readOnly ></Rating> */}
 
-                        <Typography sx={{ color: 'text.secondary' }}>{data.description}</Typography>
+                        <Typography sx={{ color: 'text.secondary' }}>{data ? data.description : ''}</Typography>
 
                     </Box>
                 </Stack>
