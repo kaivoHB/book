@@ -51,6 +51,7 @@ import {
 // layouts
 import SimpleLayout from '../layouts/simple';
 import MainLayout from '../layouts/main';
+import { isNull } from 'lodash';
 // import { parseJSON } from 'date-fns';
 // toast
 // import { toast } from 'wc-toast';
@@ -68,7 +69,7 @@ interface IBook {
   description: string;
   price: string;
   quantity_in_stock: number;
-  publication_date: Date;
+  publication_date: Date | null;
 }
 
 interface IBookUpdate {
@@ -81,7 +82,7 @@ interface IBookUpdate {
   description: string;
   price: string;
   quantity_in_stock: number;
-  publication_date: Date;
+  publication_date: Date | null;
 }
 
 type RowDataType = {
@@ -192,7 +193,7 @@ export default function Management() {
   // From new
   const handleNewSubmit = async () => {
     const { title, image_url, author, description, price, quantity_in_stock, publication_date, } = formNew;
-    const publication_date_formatted = formatDate(publication_date);
+    const publication_date_formatted = publication_date ? formatDate(publication_date) : null;
     const quantity_in_stock_formatted = Number(quantity_in_stock);
     const data = { title, author, description, price, quantity_in_stock: quantity_in_stock_formatted, publication_date: publication_date_formatted, image_url };
     const body = {"title": data.title ,"author": data.author, "description": data.description, "price": data.price, "quantity_in_stock": data.quantity_in_stock, "publication_date": data.publication_date, "image_url": data.image_url}
@@ -212,7 +213,7 @@ export default function Management() {
   const handleEditSubmit = async () => {
     if(formEdit){
       const { id, title, image_url, author, description, price, quantity_in_stock, publication_date } = formEdit;
-      const publication_date_formatted = formatDate(publication_date);
+      const publication_date_formatted = publication_date ? formatDate(publication_date) : null;
       const quantity_in_stock_formatted = Number(quantity_in_stock);
       const review: string[] = [];
       const history: string[] = [];
@@ -234,7 +235,7 @@ export default function Management() {
           clearTimeout(autoCloseTimeout);
         }
         setFormNew({ image_url: '', title: '', author: '', description: '', price: '', quantity_in_stock: 0, publication_date: new Date() });
-        handleCloseNewModal();
+        handleCloseEditModal();
       } catch (error) {
         console.error('Error posting book:', error);
       }    
@@ -246,11 +247,9 @@ export default function Management() {
   // Format date
   function formatDate(inputDate: Date) {
     const date = new Date(inputDate);
-  
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Cộng thêm 1 vì tháng bắt đầu từ 0
     const day = date.getDate().toString().padStart(2, '0');
-  
     return `${year}-${month}-${day}`;
   }
 
@@ -337,15 +336,21 @@ export default function Management() {
           <DesktopDatePicker
             inputFormat="dd-MM-yyyy"
             label="Release"
-            value={formNew.publication_date || undefined}
+            value={formNew.publication_date || new Date()}
             minDate={new Date('1000-01-01')}
-            onChange={ (newDate)=> setFormNew({ ...formNew, publication_date: newDate })}
+            onChange={ (newDate) => {
+              if (newDate === null) {
+                setFormNew({ ...formNew, publication_date: null }); // Handle null if newDate is null
+              } else {
+                setFormNew({ ...formNew, publication_date: newDate }); // Use newDate if it's not null
+              }
+            }}
             renderInput={(params) => <TextField fullWidth margin="dense" {...params} required />}
           />
           <TextField fullWidth margin="dense" id="outlined-basic" name="description" label="Description" multiline rows={4} maxRows={4} value={formNew.description} onChange={ (e)=> setFormNew({...formNew, description: e.target.value})} required />
           <TextField fullWidth margin="dense" id="outlined-basic" name="author" label="Author" variant="outlined" value={formNew.author} onChange={ (e)=> setFormNew({...formNew, author: e.target.value})} required />
           <TextField fullWidth margin="dense" id="outlined-basic" name="price" label="Price" variant="outlined" value={formNew.price} onChange={ (e)=> setFormNew({...formNew, price: e.target.value})} required />
-          <TextField fullWidth margin="dense" id="outlined-basic" name="stock" label="Stock" type='number' variant="outlined" value={formNew.quantity_in_stock} onChange={ (e)=> setFormNew({...formNew, quantity_in_stock: e.target.value})} required />
+          <TextField fullWidth margin="dense" id="outlined-basic" name="stock" label="Stock" type='number' variant="outlined" value={formNew.quantity_in_stock} onChange={ (e)=> setFormNew({...formNew, quantity_in_stock: Number(e.target.value)})} required />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseNewModal} color="inherit">
@@ -360,20 +365,57 @@ export default function Management() {
       <Dialog open={openEditModal} onClose={handleCloseEditModal}>
         <DialogTitle>Update Book</DialogTitle>
         <DialogContent>
-          <TextField fullWidth margin="dense" id="outlined-basic" name="image" label="Image" variant="outlined" value={formEdit ? formEdit.image_url : ''} onChange={ (e)=> setFormEdit({ ...formEdit, image_url: e.target.value,}) } required />
-          <TextField fullWidth margin="dense" id="outlined-basic" name="title" label="Title" variant="outlined" value={formEdit ? formEdit.title : ''} onChange={ (e)=> setFormEdit({...formEdit, title: e.target.value})} required />
+          <TextField fullWidth margin="dense" id="outlined-basic" name="image" label="Image" variant="outlined" value={formEdit ? formEdit.image_url : ''} 
+          onChange={ (e)=> setFormEdit((prevFormEdit) =>
+            prevFormEdit
+              ? { ...prevFormEdit, image_url: e.target.value }
+              : null
+          ) } required />
+          <TextField fullWidth margin="dense" id="outlined-basic" name="title" label="Title" variant="outlined" value={formEdit ? formEdit.title : ''} 
+          onChange={ (e)=> setFormEdit((prevFormEdit) =>
+            prevFormEdit
+              ? { ...prevFormEdit, title: e.target.value }
+              : null
+          ) } required />
           <DesktopDatePicker
             inputFormat="dd-MM-yyyy"
             label="Release"
-            value={formEdit ? formEdit.publication_date : ''}
+            value={formEdit ? formEdit.publication_date : null}
             minDate={new Date('1100-01-01')}
-            onChange={ (newDate)=> setFormEdit({...formEdit, publication_date: newDate})}
+            onChange={ (newDate)=> {
+              setFormEdit((prevFormEdit) => {
+                if (prevFormEdit) {
+                  return { ...prevFormEdit, publication_date: newDate };
+                } 
+                return null;
+              });
+            }}
             renderInput={(params) => <TextField fullWidth margin="dense" {...params} required />}
           />
-          <TextField fullWidth margin="dense" id="outlined-basic" name="description" label="Description" multiline rows={4} maxRows={4} value={formEdit ? formEdit.description : '' } onChange={ (e)=> setFormEdit({...formEdit, description: e.target.value})} required />
-          <TextField fullWidth margin="dense" id="outlined-basic" name="author" label="Author" variant="outlined" value={formEdit ? formEdit.author : '' } onChange={ (e)=> setFormEdit({...formEdit, author: e.target.value})} required />
-          <TextField fullWidth margin="dense" id="outlined-basic" name="price" label="Price" variant="outlined" value={formEdit ? formEdit.price : '' } onChange={ (e)=> setFormEdit({...formEdit, price: e.target.value})} required />
-          <TextField fullWidth margin="dense" id="outlined-basic" name="stock" label="Stock" type='number' variant="outlined" value={formEdit ? formEdit.quantity_in_stock : '' } onChange={ (e)=> setFormEdit({...formEdit, quantity_in_stock: e.target.value})} required />
+          <TextField fullWidth margin="dense" id="outlined-basic" name="description" label="Description" multiline rows={4} maxRows={4} value={formEdit ? formEdit.description : '' } 
+          onChange={ (e)=> setFormEdit((prevFormEdit) =>
+            prevFormEdit
+              ? { ...prevFormEdit, description: e.target.value }
+              : null
+          ) } required />
+          <TextField fullWidth margin="dense" id="outlined-basic" name="author" label="Author" variant="outlined" value={formEdit ? formEdit.author : '' } 
+          onChange={ (e)=> setFormEdit((prevFormEdit) =>
+            prevFormEdit
+              ? { ...prevFormEdit, author: e.target.value }
+              : null
+          ) } required />
+          <TextField fullWidth margin="dense" id="outlined-basic" name="price" label="Price" variant="outlined" value={formEdit ? formEdit.price : '' } 
+          onChange={ (e)=> setFormEdit((prevFormEdit) =>
+            prevFormEdit
+              ? { ...prevFormEdit, price: e.target.value }
+              : null
+          ) } required />
+          <TextField fullWidth margin="dense" id="outlined-basic" name="stock" label="Stock" type='number' variant="outlined" value={formEdit ? formEdit.quantity_in_stock : '' } 
+          onChange={ (e)=> setFormEdit((prevFormEdit) =>
+            prevFormEdit
+              ? { ...prevFormEdit, quantity_in_stock: Number(e.target.value) }
+              : null
+          ) } required />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseEditModal} color="inherit">
@@ -386,7 +428,7 @@ export default function Management() {
       </Dialog>
 
       <Container sx={{ my: 5 }}>
-        <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }} marginBottom={'20px'} >
+        <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }} marginBottom='20px'>
           <Grid item xs={9}>
             {/* <Typography variant="h4">Book management</Typography> */}
           </Grid>
