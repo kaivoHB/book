@@ -55,7 +55,7 @@ export default function BookPage() {
     const [data, setData] = useState<Data[]>([]);
 
     useEffect(() => {
-        axios.get('http://vuquanghuydev.pythonanywhere.com/api/book/')
+        axios.get('https://vuquanghuydev.pythonanywhere.com/api/book/')
         // axios.get('http://localhost:3333')
             .then((response) => {
                 setData(response.data);            
