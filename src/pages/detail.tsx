@@ -50,15 +50,15 @@ export default function Detail(props:any) {
                     {
                         data ?
                             <Stack direction={{xs: 'column', sm: 'row'}} spacing={{xs: 1, sm: 2, md: 4}}>
-                                <Box sx={{minWidth: '330px'}}>
-                                    <img src={ data.image_url } alt='' style={{ maxWidth:'450px', maxHeight: '550px', objectFit: 'cover' }} />
+                                <Box sx={{width: '50%'}}>
+                                    <img src={ data.image_url } alt={data.title} style={{ width:'100%', maxHeight: '550px', objectFit: 'cover' }} />
                                 </Box>
-                                <Box>
+                                <Box sx={{width: '50%'}}>
                                     <Typography variant='h4' sx={{ mb: 1, mt: 3}}>
                                         {data ? data.title : ''}
                                     </Typography>
 
-                                    {/* <Rating name='read-only' value={data ? data.rating : 4} readOnly ></Rating> */}
+                                    <Rating value={4} readOnly />
 
                                     <Typography sx={{ color: 'text.secondary' }}>{data ? data.description : ''}</Typography>
                                 </Box>
