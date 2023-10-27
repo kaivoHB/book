@@ -34,6 +34,7 @@ import {
   TableContainer,
   Modal,
   DialogProps,
+  Skeleton
 } from '@mui/material';
 import { DesktopDatePicker } from '@mui/x-date-pickers';
 // components
@@ -90,6 +91,7 @@ type RowDataType = {
   title: string;
   image: string;
   author: string;
+  image_url: string;
 };
 
 const TABLE_HEAD = [
@@ -97,7 +99,7 @@ const TABLE_HEAD = [
   { id: 'image', label: 'Image', align: 'center' },
   { id: 'book', label: 'Book', align: 'center' },
   { id: 'author', label: 'Author', align: 'center' },
-  { id: '' },
+  { id: 'actions', label: 'Actions', align: 'center' },
 ];
 
 const style = {
@@ -255,7 +257,7 @@ export default function Management() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://vuquanghuydev.pythonanywhere.com/api/book/');
+      const response = await axios.get('https://vuquanghuydev.pythonanywhere.com/api/book/');
       setTableData(response.data);
     } catch (error) {
       console.log('error', error);
@@ -293,6 +295,27 @@ export default function Management() {
       setShowAlert(true); // Hiển thị thông báo lỗi
       }
   }
+
+  // Loading
+  const skeletonRows = Array.from({ length: 5 }, (_, index) => (
+    <TableRow key={index}>
+      <TableCell>
+        <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
+      </TableCell>
+      <TableCell align="center">
+        <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
+      </TableCell>
+      <TableCell align="center">
+        <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
+      </TableCell>
+      <TableCell align="center">
+        <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
+      </TableCell>
+      <TableCell align="center">
+        <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
+      </TableCell>
+    </TableRow>
+  ));  
 
   return (
     <>
@@ -496,7 +519,15 @@ export default function Management() {
                             <Checkbox checked={selected.includes(row.id)} />
                           </TableCell> */}
                           <TableCell> {row.id} </TableCell>
-                          <TableCell align="center">image</TableCell>
+                          <TableCell align="center">
+                            {
+                              row.image_url ?
+                                <img src={row.image_url } alt={row.title} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '5px'}}/>
+                              :
+                                <Skeleton variant="rectangular" width={50} height={50} />
+                            }
+                            
+                          </TableCell>
                           <TableCell align="center">{row.title}</TableCell>
                           <TableCell align="center">{row.author}</TableCell>
                           <TableCell align="center">
@@ -509,6 +540,9 @@ export default function Management() {
                           </TableCell>
                         </TableRow>
                       ))}
+                      {/* {
+                        dataFiltered && skeletonRows
+                      } */}
 
                     <TableEmptyRows
                       height={denseHeight}

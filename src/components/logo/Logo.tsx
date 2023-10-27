@@ -5,7 +5,7 @@ import NextLink from 'next/link';
 import { useTheme } from '@mui/material/styles';
 import { Box, Link, BoxProps } from '@mui/material';
 
-import bixso from '../../../public/logo/bixso.jpeg'
+// import bixso from '../../../public/logo/bixso.jpeg'
 // ----------------------------------------------------------------------
 
 export interface LogoProps extends BoxProps {
@@ -44,7 +44,7 @@ const Logo = forwardRef<HTMLDivElement, LogoProps>(
         }}
         {...other}
       >
-        <img style={{borderRadius: '50%'}} src='../../../public/logo/bixso.jpeg' alt="" />
+        <img style={{borderRadius: '50%'}} src='https://scontent.fsgn2-3.fna.fbcdn.net/v/t39.30808-6/387137289_122125665332033075_4833314601378122701_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=5f2048&_nc_eui2=AeHV2noxVlC2SsA749vEiOmAaCSsfLq5_s9oJKx8urn-z9CGMRkq6XLrmMDtrje2Cv2N4PcJRT7WbaGSIV31yDQw&_nc_ohc=dnbtZPLqFd8AX8Dnt25&_nc_ht=scontent.fsgn2-3.fna&oh=00_AfBwUh4_uCsZUiDBVdh0hcs6FQhKa170rl8YE1b8pvtiSA&oe=65407B94' alt="" />
       </Box>
     );
 

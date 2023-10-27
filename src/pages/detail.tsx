@@ -6,7 +6,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 // @mui
 import { alpha } from '@mui/material/styles';
-import { Box, Tab, Tabs, Card, Grid, Divider, Container, Typography, Stack, Rating } from '@mui/material';
+import { Box, Tab, Tabs, Card, Grid, Divider, Container, Typography, Stack, Rating, Skeleton } from '@mui/material';
 // layouts
 import MainLayout from '../layouts/main';
 
@@ -47,21 +47,37 @@ export default function Detail(props:any) {
             </Head>
 
             <Container maxWidth='md' sx={{ height: 1, mt: 4, mb: 2, pb: 3 }}>
-                <Stack direction={{xs: 'column', sm: 'row'}} spacing={{xs: 1, sm: 2, md: 4}}>
-                    <Box>
-                        <img src={ data ? data.image_url : ''} alt='' style={{ width:'450px', maxHeight: '550px', objectFit: 'cover' }} />
-                    </Box>
-                    <Box>
-                        <Typography variant='h4' sx={{ mb: 1, mt: 3}}>
-                            {data ? data.title : ''}
-                        </Typography>
+                    {
+                        data ?
+                            <Stack direction={{xs: 'column', sm: 'row'}} spacing={{xs: 1, sm: 2, md: 4}}>
+                                <Box sx={{minWidth: '450px'}}>
+                                    <img src={ data.image_url } alt='' style={{ width:'100%', maxHeight: '550px', objectFit: 'cover' }} />
+                                </Box>
+                                <Box>
+                                    <Typography variant='h4' sx={{ mb: 1, mt: 3}}>
+                                        {data ? data.title : ''}
+                                    </Typography>
 
-                        {/* <Rating name='read-only' value={4} readOnly ></Rating> */}
+                                    {/* <Rating name='read-only' value={data ? data.rating : 4} readOnly ></Rating> */}
 
-                        <Typography sx={{ color: 'text.secondary' }}>{data ? data.description : ''}</Typography>
+                                    <Typography sx={{ color: 'text.secondary' }}>{data ? data.description : ''}</Typography>
+                                </Box>
+                            </Stack>
+                        :
+                        <Stack direction={{xs: 'column', sm: 'row'}} spacing={{xs: 1, sm: 2, md: 4}}>
+                                <Box>
+                                    <Skeleton variant="rectangular" style={{ width:'450px', height: '550px' }} />
+                                </Box>
+                                <Box>
+                                    <Typography variant="h4"> <Skeleton width={300}/> </Typography>
 
-                    </Box>
-                </Stack>
+                                    <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
+
+                                    <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
+                                </Box>
+                            </Stack>
+                    }
+                    
             </Container>
         </>
     )

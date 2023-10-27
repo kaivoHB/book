@@ -9,7 +9,7 @@ import NextLink from 'next/link';
 import Head from 'next/head';
 // @mui
 import { styled, alpha, useTheme } from '@mui/material/styles';
-import { Button, Box, Link, Container, Typography, Stack, Grid, Rating, Card, CardHeader, CardContent, CardActions } from '@mui/material';
+import { Button, Box, Link, Container, Typography, Stack, Grid, Rating, Card, CardHeader, CardContent, CardActions, Skeleton } from '@mui/material';
 // routes
 import { PATH_BOOK, PATH_DASHBOARD, PATH_FIGMA_PREVIEW, PATH_FREE_VERSION, PATH_PAGE } from '../../routes/paths';
 // @types
@@ -98,19 +98,37 @@ export default function BookPage() {
                                 <Card>
                                     <img src={item.image_url} style={{width: '100%', maxHeight: '200px', objectFit: 'cover'}} alt={item.title}/>
                                     <Link href={`/detail/?id=${item.id}`} underline="none">
-                                        <CardHeader title={item.title} />
+                                        <CardHeader title={item.title} sx={{height: '60px' }}/>
                                     </Link>
 
                                     <CardContent>
-                                            <TextMaxLine line={2}>
-                                                {item.description}
-                                            </TextMaxLine>
+                                        <TextMaxLine line={1}>
+                                            {item.description}
+                                        </TextMaxLine>
                                     </CardContent>
                                 </Card>
                             </Grid>
                         ))}
                     </Grid>
                 </Container>
+
+                { !data &&   
+                    <Container component={MotionContainer} sx={{ height: 1, mt: 0, mb: 2, pb: 3 }}>
+                        <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md:12 }}>
+                            {Array.from({ length: 6 }, (_, index) => (
+                                <Grid item xs={4} sm={4} md={4} key={index}>
+                                    <Card>
+                                        <Skeleton variant="rectangular" style={{ width:'100%', height: '200px' }} />
+                                        <CardContent>
+                                            <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
+                                            <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
+                                        </CardContent>
+                                    </Card>
+                                </Grid>
+                            ))}
+                        </Grid>                        
+                    </Container>
+                }
             </StyledRoot>
         </>
     )
