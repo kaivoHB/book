@@ -31,7 +31,7 @@ export default function Detail(props:any) {
     const [data, setData] = useState<Data | null>(null);
 
     useEffect(() => {
-        axios.get(`http://vuquanghuydev.pythonanywhere.com/api/book/${id}/`)
+        axios.get(`https://vuquanghuydev.pythonanywhere.com/api/book/${id}/`)
             .then((response) => {
                 setData(response.data);            
             })
