@@ -50,8 +50,8 @@ export default function Detail(props:any) {
                     {
                         data ?
                             <Stack direction={{xs: 'column', sm: 'row'}} spacing={{xs: 1, sm: 2, md: 4}}>
-                                <Box sx={{minWidth: '450px'}}>
-                                    <img src={ data.image_url } alt='' style={{ width:'100%', maxHeight: '550px', objectFit: 'cover' }} />
+                                <Box sx={{minWidth: '330px'}}>
+                                    <img src={ data.image_url } alt='' style={{ maxWidth:'450px', maxHeight: '550px', objectFit: 'cover' }} />
                                 </Box>
                                 <Box>
                                     <Typography variant='h4' sx={{ mb: 1, mt: 3}}>
