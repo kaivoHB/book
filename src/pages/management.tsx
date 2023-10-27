@@ -6,7 +6,7 @@ import { m } from 'framer-motion';
 import axios from 'axios';
 // next
 import Head from 'next/head';
-import NextLink from 'next/link';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 // @mui
 import {
@@ -459,8 +459,8 @@ export default function Management() {
             {/* <Button startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpen}>
               New book
             </Button> */}
-            <Button startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleClickOpenNewModal('paper')} sx={{ mr: 2 }}>
-            New book
+            <Button onClick={handleClickOpenNewModal('paper')} sx={{ mr: 2 }}>
+              <Iconify icon="eva:plus-fill" /> New book
             </Button>
           </Grid>
         </Grid>
@@ -531,6 +531,11 @@ export default function Management() {
                           <TableCell align="center">{row.title}</TableCell>
                           <TableCell align="center">{row.author}</TableCell>
                           <TableCell align="center">
+                            <Link href={`/detail/?id=${row.id}`} style={{ textDecoration: 'none', color: 'text.primary'}}>
+                              <Button color="primary">
+                                <Iconify icon="carbon:view" />
+                              </Button>
+                            </Link>
                             <Button color="primary" onClick={handleClickEditModal('paper', row)} sx={{ mr: 2 }}>
                               <Iconify icon="eva:edit-outline" />
                             </Button>
@@ -540,9 +545,9 @@ export default function Management() {
                           </TableCell>
                         </TableRow>
                       ))}
-                      {/* {
-                        dataFiltered && skeletonRows
-                      } */}
+                      {
+                        !dataFiltered && skeletonRows
+                      }
 
                     <TableEmptyRows
                       height={denseHeight}
