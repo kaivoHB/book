@@ -29,6 +29,7 @@ import { MotionContainer, varFade } from '../../components/animate';
 
 import TextMaxLine from '../../components/text-max-line';
 import CustomBreadcrumbs from '../../components/custom-breadcrumbs';
+import Image from '../../components/image';
 
 const StyledRoot = styled('div')(({ theme }) => ({
     ...bgGradient({
@@ -91,7 +92,9 @@ export default function BookPage() {
                     </Container>
                 </Box> */}
 
-                <Container component={MotionContainer} sx={{ height: 1, mt: 14, mb: 2, pb: 3 }}>
+                <Image alt='cover' style={{maxHeight: '500px', objectFit: 'cover', marginTop: '80px'}} src='https://images.pexels.com/photos/1421176/pexels-photo-1421176.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'/>
+
+                <Container component={MotionContainer} sx={{ height: 1, mt: 7, mb: 2, pb: 3 }}>
                     <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md:12 }}>
                         {data.map((item) => (
                             <Grid item xs={4} sm={4} md={4} key={item.id}>
